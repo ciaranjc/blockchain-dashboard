@@ -1,5 +1,5 @@
-# Generated output – uploaded to Azure by CI, not stored in git
-blockchain_dashboard.html
+# Generated output – built by CI and deployed to GitHub Pages, not stored in git
+index.html
 
 # Excel data file – replaced by API fetching
 blockchain_dashboard_CC.xlsx

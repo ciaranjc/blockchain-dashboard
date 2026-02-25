@@ -3,7 +3,7 @@ import os
 import sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-OUTPUT_PATH = os.path.join(SCRIPT_DIR, 'blockchain_dashboard.html')
+OUTPUT_PATH = os.path.join(SCRIPT_DIR, 'index.html')
 
 # Fetch all data from public APIs (replaces Excel / Power Query)
 sys.path.insert(0, SCRIPT_DIR)
