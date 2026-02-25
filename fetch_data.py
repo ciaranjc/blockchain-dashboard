@@ -26,7 +26,7 @@ CHAINS = [
 BINANCE_MAP = {
     "ethereum": "ETH", "bitcoin": "BTC",  "solana":  "SOL",
     "bsc":      "BNB", "tron":    "TRX",  "base":    "ETH",
-    "arbitrum": "ETH", "hyperliquid-l1": "HYPE",
+    "arbitrum": "ETH",
 }
 
 sess = requests.Session()

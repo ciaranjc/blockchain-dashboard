@@ -1,5 +1,5 @@
-# Generated output – built by CI and deployed to GitHub Pages, not stored in git
-index.html
+# Generated output – run generate_dashboard.py to regenerate
+blockchain_dashboard.html
 
 # Excel data file – replaced by API fetching
 blockchain_dashboard_CC.xlsx
