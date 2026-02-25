@@ -502,9 +502,9 @@ function firstValidDate(dates, ...arrays) {{
 // Pre-compute x-axis start dates (first date where all series are non-zero)
 let scStart = firstValidDate(D.sc_dates, D.sc_usdt, D.sc_usdc, D.sc_others);
 let tvlTotalStart = firstValidDate(D.total_tvl_dates, D.total_tvl_vals);
-let tvlChainStart = firstValidDate(D.tvl_dates, D.tvl_eth, D.tvl_sol, D.tvl_bsc, D.tvl_btc, D.tvl_tron, D.tvl_base);
+let tvlChainStart = firstValidDate(D.tvl_dates, D.tvl_eth, D.tvl_sol, D.tvl_tron);
 let feeTotalStart = firstValidDate(D.fee_dates, D.fee_total);
-let feeChainStart = firstValidDate(D.fee_dates, D.fee_eth, D.fee_sol, D.fee_bsc, D.fee_btc, D.fee_tron, D.fee_base);
+let feeChainStart = firstValidDate(D.fee_dates, D.fee_eth, D.fee_sol, D.fee_tron);
 
 // KPIs
 document.getElementById('kpis').innerHTML = `
