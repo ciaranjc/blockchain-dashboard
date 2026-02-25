@@ -1,0 +1,19 @@
+# Generated output – uploaded to Azure by CI, not stored in git
+blockchain_dashboard.html
+
+# Excel data file – replaced by API fetching
+blockchain_dashboard_CC.xlsx
+
+# Old working versions
+working/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Claude Code internal files
+.claude/
+
+# Local temp files
+*.tmp
