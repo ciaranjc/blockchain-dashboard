@@ -12,6 +12,15 @@ from fetch_data import fetch_all
 data        = fetch_all()
 last_update = data.pop('_last_update', 'N/A')
 
+# Diagnostic: show key price fields in workflow logs
+print(f"[diag] fee_dates        (first 3): {data.get('fee_dates', [])[:3]}")
+print(f"[diag] fee_eth_price    (first 3): {data.get('fee_eth_price', [])[:3]}")
+print(f"[diag] fee_sol_price    (first 3): {data.get('fee_sol_price', [])[:3]}")
+print(f"[diag] fee_btc_price    (first 3): {data.get('fee_btc_price', [])[:3]}")
+print(f"[diag] corr_dates count          : {len(data.get('corr_dates', []))}")
+print(f"[diag] tvd_btc_price    (first 3): {data.get('tvd_btc_price', [])[:3]}")
+print(f"[diag] tvd_eth_price    (first 3): {data.get('tvd_eth_price', [])[:3]}")
+
 data_json = json.dumps(data, default=str)
 
 html = f"""<!DOCTYPE html>
