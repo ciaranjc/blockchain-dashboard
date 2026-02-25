@@ -297,8 +297,10 @@ def fetch_fees_and_prices():
         "fee_sol_price":   sr(sp_asc),
         "fee_eth_native":  sr(nat_eth),
         "fee_sol_native":  sr(nat_sol),
-        "_btc_price_daily": dict(zip(all_dates_asc, bp_asc)),
-        "_eth_price_daily": dict(zip(all_dates_asc, ep_asc)),
+        # Return full Binance price dicts directly — not indexed by fee dates,
+        # so correlations work even when fee API calls fail (e.g. corporate firewall)
+        "_btc_price_daily": prices.get("BTC", {}),
+        "_eth_price_daily": prices.get("ETH", {}),
     }
 
 
