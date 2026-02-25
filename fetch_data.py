@@ -131,7 +131,8 @@ def fetch_stablecoin_overview():
 
 
 def fetch_stablecoin_market_caps():
-    """Returns (dates, usdt, usdc, others, total) newest-first, sampled every 3."""
+    """Returns (dates, usdt, usdc, others, total, date_usdt_daily, date_usdc_daily).
+    Sampled-every-3 lists are newest-first; daily dicts are keyed by 'YYYY-MM-DD'."""
     print("  Fetching stablecoin market caps...")
     total_raw = get_json("https://stablecoins.llama.fi/stablecoincharts/all") or []
     usdt_raw  = get_json("https://stablecoins.llama.fi/stablecoin/1") or {}
@@ -163,7 +164,9 @@ def fetch_stablecoin_market_caps():
         dates.append(d);  usdt.append(u);   usdc.append(c)
         others.append(max(0, t - u - c));   total.append(t)
 
-    return dates, usdt, usdc, others, total
+    # Return daily dicts so fetch_all can reuse them for correlations
+    # without a second API call to stablecoin/1 and stablecoin/2.
+    return dates, usdt, usdc, others, total, date_usdt, date_usdc
 
 
 def fetch_eth_active_addresses():
@@ -295,12 +298,14 @@ def fetch_fees_and_prices():
         "fee_total":       sr(avg_total),
         "fee_eth_price":   sr(ep_asc),
         "fee_sol_price":   sr(sp_asc),
+        "fee_btc_price":   sr(bp_asc),
         "fee_eth_native":  sr(nat_eth),
         "fee_sol_native":  sr(nat_sol),
         # Return full Binance price dicts directly — not indexed by fee dates,
         # so correlations work even when fee API calls fail (e.g. corporate firewall)
         "_btc_price_daily": prices.get("BTC", {}),
         "_eth_price_daily": prices.get("ETH", {}),
+        "_sol_price_daily": prices.get("SOL", {}),
     }
 
 
@@ -507,31 +512,25 @@ def fetch_all():
     print("Fetching all dashboard data...")
 
     stablecoin_overview, peg_mech = fetch_stablecoin_overview()
-    sc_dates, sc_usdt, sc_usdc, sc_others, sc_total = fetch_stablecoin_market_caps()
+    sc_dates, sc_usdt, sc_usdc, sc_others, sc_total, sc_usdt_daily, sc_usdc_daily = fetch_stablecoin_market_caps()
     aa_dates, aa_usdt, aa_usdc = fetch_eth_active_addresses()
 
     fees            = fetch_fees_and_prices()
     btc_price_daily = fees.pop("_btc_price_daily")
     eth_price_daily = fees.pop("_eth_price_daily")
+    sol_price_daily = fees.pop("_sol_price_daily")
 
     tvl              = fetch_tvl_data()
     top_protocols, cat_tvl_sorted = fetch_protocols()
     vol              = fetch_volume()
 
-    # Daily USDT/USDC market cap for correlations
-    usdt_raw = get_json("https://stablecoins.llama.fi/stablecoin/1") or {}
-    usdc_raw = get_json("https://stablecoins.llama.fi/stablecoin/2") or {}
-    sc_usdt_daily = {
-        ts_to_date(t["date"]): ((t.get("circulating") or {}).get("peggedUSD") or 0)
-        for t in usdt_raw.get("tokens", [])
-    }
-    sc_usdc_daily = {
-        ts_to_date(t["date"]): ((t.get("circulating") or {}).get("peggedUSD") or 0)
-        for t in usdc_raw.get("tokens", [])
-    }
+    # Reuse the daily dicts already fetched by fetch_stablecoin_market_caps —
+    # no second API call needed, avoids rate-limit failures.
     corr = build_correlations(sc_usdt_daily, sc_usdc_daily, eth_price_daily, btc_price_daily)
 
     tvd_btc_price = [btc_price_daily.get(d) for d in vol["tvd_dates"]]
+    tvd_eth_price = [eth_price_daily.get(d) for d in vol["tvd_dates"]]
+    tvd_sol_price = [sol_price_daily.get(d) for d in vol["tvd_dates"]]
 
     # Daily TVL per chain for fee efficiency
     print("  Fetching per-chain TVL for fee efficiency...")
@@ -578,6 +577,8 @@ def fetch_all():
         "tvd_usdc":       vol["tvd_usdc"],   "tvd_total": vol["tvd_total"],
         "tvd_total_7d":   vol["tvd_total_7d"],
         "tvd_btc_price":  tvd_btc_price,
+        "tvd_eth_price":  tvd_eth_price,
+        "tvd_sol_price":  tvd_sol_price,
         "fe_months":      fe_months,
         "fe_eff":         fe_eff,
         "fe_eff_total":   fe_eff_total,

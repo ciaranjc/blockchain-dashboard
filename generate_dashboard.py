@@ -672,7 +672,7 @@ function updateFeeChart(mode, btn) {{
 updateFeeChart('stacked');
 
 // Activity vs Token Price (Ethereum) - with USD/native toggle
-let ethActStart = firstValidDate(D.fee_dates, D.fee_eth, D.fee_eth_price);
+let ethActStart = firstValidDate(D.fee_dates, D.fee_eth);
 function updateActivityEth(mode, btn) {{
   document.querySelector('#chart-activity-eth').closest('.chart-card').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
@@ -692,7 +692,7 @@ function updateActivityEth(mode, btn) {{
 updateActivityEth('usd');
 
 // Activity vs Token Price (Solana) - with USD/native toggle
-let solActStart = firstValidDate(D.fee_dates, D.fee_sol, D.fee_sol_price);
+let solActStart = firstValidDate(D.fee_dates, D.fee_sol);
 function updateActivitySol(mode, btn) {{
   document.querySelector('#chart-activity-sol').closest('.chart-card').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
@@ -715,7 +715,7 @@ updateActivitySol('usd');
 let btcActStart = firstValidDate(D.fee_dates, D.fee_btc);
 Plotly.newPlot('chart-activity-btc', [
   {{ x: D.fee_dates, y: D.fee_btc, name: 'BTC Fees 7D Avg (USD)', fill: 'tozeroy', fillcolor: 'rgba(247,150,8,0.12)', line: {{ color: '#F79608', width: 2 }}, yaxis: 'y' }},
-  {{ x: D.corr_dates, y: D.btc_price, name: 'BTC Price', line: {{ color: '#4A04A5', width: 2 }}, yaxis: 'y2' }},
+  {{ x: D.fee_dates, y: D.fee_btc_price, name: 'BTC Price', line: {{ color: '#4A04A5', width: 2 }}, yaxis: 'y2' }},
 ], {{
   ...layoutBase,
   xaxis: {{...layoutBase.xaxis, rangeslider: {{ visible: true, bgcolor: '#f5f5f5' }}, type: 'date', range: [btcActStart, D.fee_dates[0]] }},
@@ -750,10 +750,10 @@ if (D.has_tvd) {{
     if (btn) btn.classList.add('active');
     let priceDates, priceData, priceName, priceColor, priceAxisTitle;
     if (mode === 'eth') {{
-      priceDates = D.fee_dates; priceData = D.fee_eth_price;
+      priceDates = D.tvd_dates; priceData = D.tvd_eth_price;
       priceName = 'Ethereum Price'; priceColor = '#00A2BD'; priceAxisTitle = 'ETH Price ($)';
     }} else if (mode === 'sol') {{
-      priceDates = D.fee_dates; priceData = D.fee_sol_price;
+      priceDates = D.tvd_dates; priceData = D.tvd_sol_price;
       priceName = 'Solana Price'; priceColor = '#B50063'; priceAxisTitle = 'SOL Price ($)';
     }} else {{
       priceDates = D.tvd_dates; priceData = D.tvd_btc_price;
