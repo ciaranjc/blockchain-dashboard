@@ -36,6 +36,24 @@ jobs:
           DUNE_API_KEY: ${{ secrets.DUNE_API_KEY }}
         run: python generate_dashboard.py
 
+      - name: Verify data (debug)
+        run: |
+          python - <<'PYEOF'
+          import json
+          with open("blockchain_dashboard.html", encoding="utf-8") as f:
+              content = f.read()
+          # Extract the data JSON
+          start = content.index("const D = ") + len("const D = ")
+          end   = content.index(";\n", start)
+          d = json.loads(content[start:end])
+          print(f"tvl_dates:   {d.get('tvl_dates', [])[:3]}")
+          print(f"tvl_eth:     {d.get('tvl_eth',   [])[:3]}")
+          print(f"fee_dates:   {d.get('fee_dates',  [])[:3]}")
+          print(f"fee_total:   {d.get('fee_total',  [])[:3]}")
+          print(f"corr_dates:  {d.get('corr_dates', [])[:3]}")
+          print(f"peg_mech:    {d.get('peg_mech')}")
+          PYEOF
+
       - name: Upload to GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
