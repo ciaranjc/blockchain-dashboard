@@ -283,6 +283,7 @@ def fetch_fees_and_prices():
 
     nat_eth = [safe_div(f, p) for f, p in zip(avg_eth, ep_asc)]
     nat_sol = [safe_div(f, p) for f, p in zip(avg_sol, sp_asc)]
+    nat_btc = [safe_div(f, p) for f, p in zip(avg_btc, bp_asc)]
 
     idxs = list(range(0, len(all_dates_asc), 3))
     def sr(lst): return [lst[i] for i in idxs][::-1]
@@ -301,6 +302,7 @@ def fetch_fees_and_prices():
         "fee_btc_price":   sr(bp_asc),
         "fee_eth_native":  sr(nat_eth),
         "fee_sol_native":  sr(nat_sol),
+        "fee_btc_native":  sr(nat_btc),
         # Return full Binance price dicts directly — not indexed by fee dates,
         # so correlations work even when fee API calls fail (e.g. corporate firewall)
         "_btc_price_daily": prices.get("BTC", {}),

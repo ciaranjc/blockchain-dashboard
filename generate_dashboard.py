@@ -295,6 +295,10 @@ html = f"""<!DOCTYPE html>
     <div class="chart-card">
       <h3>Activity vs Token Price (Bitcoin)</h3>
       <div class="chart-desc">BTC fees (7D avg) overlaid with Bitcoin price</div>
+      <div class="tabs">
+        <button class="tab-btn active" onclick="updateActivityBtc('usd', this)">Fees (USD)</button>
+        <button class="tab-btn" onclick="updateActivityBtc('native', this)">Fees (BTC)</button>
+      </div>
       <div id="chart-activity-btc" style="height:340px"></div>
       <div class="chart-source">Source: DefiLlama, CoinGecko | Data as of {last_update}</div>
     </div>
@@ -711,17 +715,25 @@ function updateActivitySol(mode, btn) {{
 }}
 updateActivitySol('usd');
 
-// Activity vs Token Price (Bitcoin)
+// Activity vs Token Price (Bitcoin) - with USD/native toggle
 let btcActStart = firstValidDate(D.fee_dates, D.fee_btc);
-Plotly.newPlot('chart-activity-btc', [
-  {{ x: D.fee_dates, y: D.fee_btc, name: 'BTC Fees 7D Avg (USD)', fill: 'tozeroy', fillcolor: 'rgba(247,150,8,0.12)', line: {{ color: '#F79608', width: 2 }}, yaxis: 'y' }},
-  {{ x: D.fee_dates, y: D.fee_btc_price, name: 'BTC Price', line: {{ color: '#4A04A5', width: 2 }}, yaxis: 'y2' }},
-], {{
-  ...layoutBase,
-  xaxis: {{...layoutBase.xaxis, rangeslider: {{ visible: true, bgcolor: '#f5f5f5' }}, type: 'date', range: [btcActStart, D.fee_dates[0]] }},
-  yaxis: {{...layoutBase.yaxis, title: 'Fees ($)', titlefont: {{ color: '#F79608' }}, tickfont: {{ color: '#F79608' }} }},
-  yaxis2: {{ title: 'BTC Price ($)', titlefont: {{ color: '#4A04A5' }}, tickfont: {{ color: '#4A04A5' }}, overlaying: 'y', side: 'right', gridcolor: 'transparent' }},
-}}, config);
+function updateActivityBtc(mode, btn) {{
+  document.querySelector('#chart-activity-btc').closest('.chart-card').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  let feeData  = mode === 'native' ? D.fee_btc_native : D.fee_btc;
+  let feeLabel = mode === 'native' ? 'BTC Fees 7D Avg (BTC)' : 'BTC Fees 7D Avg (USD)';
+  let feeAxisTitle = mode === 'native' ? 'Fees (BTC)' : 'Fees ($)';
+  Plotly.react('chart-activity-btc', [
+    {{ x: D.fee_dates, y: feeData, name: feeLabel, fill: 'tozeroy', fillcolor: 'rgba(247,150,8,0.12)', line: {{ color: '#F79608', width: 2 }}, yaxis: 'y' }},
+    {{ x: D.fee_dates, y: D.fee_btc_price, name: 'BTC Price', line: {{ color: '#4A04A5', width: 2 }}, yaxis: 'y2' }},
+  ], {{
+    ...layoutBase,
+    xaxis: {{...layoutBase.xaxis, rangeslider: {{ visible: true, bgcolor: '#f5f5f5' }}, type: 'date', range: [btcActStart, D.fee_dates[0]] }},
+    yaxis: {{...layoutBase.yaxis, title: feeAxisTitle, titlefont: {{ color: '#F79608' }}, tickfont: {{ color: '#F79608' }} }},
+    yaxis2: {{ title: 'BTC Price ($)', titlefont: {{ color: '#4A04A5' }}, tickfont: {{ color: '#4A04A5' }}, overlaying: 'y', side: 'right', gridcolor: 'transparent' }},
+  }}, config);
+}}
+updateActivityBtc('usd');
 
 // Transaction Volume Daily (if data available)
 if (D.has_tvd) {{
